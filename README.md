@@ -1,98 +1,224 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Promo Code REST API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## 📌 Overview
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project is a REST API for managing promo codes and their activations.
 
-## Description
+It allows:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+* Creating promo codes
+* Listing promo codes
+* Activating promo codes by email with constraints
 
-## Project setup
+Built with:
+
+* Node.js
+* TypeScript
+* NestJS
+* PostgreSQL
+* Prisma ORM
+
+---
+
+## 🚀 Features
+
+### Promo Code
+
+* Create a promo code
+* View all promo codes
+
+### Activation
+
+* Activate promo code by email
+* Each email can activate a promo code only once
+* Activation limit is enforced
+* Expired promo codes cannot be activated
+
+---
+
+## 🗄️ Data Model
+
+### PromoCode
+
+* `id` (UUID)
+* `code` (unique)
+* `discount` (%)
+* `activationLimit`
+* `activationCount`
+* `expiresAt`
+* `createdAt`
+
+### Activation
+
+* `id`
+* `promoCodeId`
+* `email`
+* `createdAt`
+
+Constraints:
+
+* Unique (promoCodeId + email)
+* activationCount <= activationLimit
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1. Clone repository
 
 ```bash
-$ npm install
+git clone <your-repo-url>
+cd promo-api
 ```
 
-## Compile and run the project
+---
+
+### 2. Install dependencies
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+---
+
+### 3. Setup environment
+
+Create `.env` file:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5433/promo_db"
+```
+
+---
+
+### 4. Run database
+
+Example using Docker:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker run --name promo-postgres \
+-p 5433:5432 \
+-e POSTGRES_PASSWORD=postgres \
+-e POSTGRES_DB=promo_db \
+-d postgres
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 5. Run migrations
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev --name init
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+### 6. Start server
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+npm run start:dev
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Server will run at:
 
-## Support
+```
+http://localhost:3000
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+## 🧪 API Endpoints
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Create Promo Code
 
-## License
+```http
+POST /promocodes
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Body:
+
+```json
+{
+  "code": "SALE10",
+  "discount": 10,
+  "activationLimit": 2,
+  "expiresAt": "2026-12-31T00:00:00Z"
+}
+```
+
+---
+
+### Get All Promo Codes
+
+```http
+GET /promocodes
+```
+
+---
+
+### Activate Promo Code
+
+```http
+POST /promocodes/:code/activate
+```
+
+Body:
+
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+---
+
+## ❗ Business Rules
+
+* A promo code can be activated only within its validity period
+* Each email can activate a specific promo code only once
+* Activation cannot exceed the defined limit
+* All activation operations are executed inside a transaction
+
+---
+
+## 🧪 Testing
+
+Example using PowerShell:
+
+```powershell
+Invoke-RestMethod -Uri "http://localhost:3000/promocodes" `
+-Method POST `
+-Headers @{ "Content-Type" = "application/json" } `
+-Body '{"code":"SALE10","discount":10,"activationLimit":2,"expiresAt":"2026-12-31T00:00:00Z"}'
+```
+
+---
+
+## 📦 Tech Stack
+
+* NestJS
+* Prisma ORM
+* PostgreSQL
+* TypeScript
+
+---
+
+## 📌 Notes
+
+* No authentication implemented (as per requirements)
+* No frontend included
+* Focus on correctness and data integrity
+
+---
+
+## ✅ Status
+
+✔ Core functionality implemented
+✔ Constraints enforced
+✔ API tested manually
+
+---
+
+## 👨‍💻 Author
+
+* Shirley Bailey

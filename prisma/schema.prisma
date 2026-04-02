@@ -15,7 +15,6 @@ model PromoCode {
   activationCount  Int      @default(0)
   expiresAt        DateTime
   createdAt        DateTime @default(now())
-
   activations      Activation[]
 }
 
@@ -24,8 +23,6 @@ model Activation {
   promoCodeId  String
   email        String
   createdAt    DateTime @default(now())
-
   promoCode    PromoCode @relation(fields: [promoCodeId], references: [id])
-
   @@unique([promoCodeId, email])
 }

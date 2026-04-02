@@ -1,68 +1,65 @@
-# Promo Code REST API
+# 🚀 Promo Code API
 
-## 📌 Overview
-
-This project is a REST API for managing promo codes and their activations.
-
-It allows:
-
-* Creating promo codes
-* Listing promo codes
-* Activating promo codes by email with constraints
-
-Built with:
-
-* Node.js
-* TypeScript
-* NestJS
-* PostgreSQL
-* Prisma ORM
+> A robust REST API for managing promo codes and activation workflows
+> Built with **NestJS, Prisma, PostgreSQL**
 
 ---
 
-## 🚀 Features
+## ✨ Features
 
-### Promo Code
-
-* Create a promo code
-* View all promo codes
-
-### Activation
-
-* Activate promo code by email
-* Each email can activate a promo code only once
-* Activation limit is enforced
-* Expired promo codes cannot be activated
+* 🎟️ Create and manage promo codes
+* 📧 Activate promo codes via email
+* 🔒 Enforce unique activation per email
+* 🚫 Prevent activation beyond limits
+* ⏳ Expiration validation
+* 🔁 Transaction-safe operations
 
 ---
 
-## 🗄️ Data Model
+## 🧠 Business Logic
 
-### PromoCode
-
-* `id` (UUID)
-* `code` (unique)
-* `discount` (%)
-* `activationLimit`
-* `activationCount`
-* `expiresAt`
-* `createdAt`
-
-### Activation
-
-* `id`
-* `promoCodeId`
-* `email`
-* `createdAt`
-
-Constraints:
-
-* Unique (promoCodeId + email)
-* activationCount <= activationLimit
+* Each promo code has a **limited number of activations**
+* Each email can activate a specific promo code **only once**
+* Expired promo codes **cannot be used**
+* All activation logic is handled inside a **database transaction**
 
 ---
 
-## ⚙️ Setup Instructions
+## 🏗️ Tech Stack
+
+| Layer      | Technology                    |
+| ---------- | ----------------------------- |
+| Backend    | NestJS (Node.js + TypeScript) |
+| ORM        | Prisma                        |
+| Database   | PostgreSQL                    |
+| Validation | class-validator               |
+| API Docs   | Swagger                       |
+
+---
+
+## 📊 Data Model
+
+```mermaid
+erDiagram
+    PromoCode ||--o{ Activation : has
+    PromoCode {
+        string id
+        string code
+        int discount
+        int activationLimit
+        int activationCount
+        datetime expiresAt
+    }
+    Activation {
+        string id
+        string email
+        datetime createdAt
+    }
+```
+
+---
+
+## ⚙️ Getting Started
 
 ### 1. Clone repository
 
@@ -86,14 +83,12 @@ npm install
 Create `.env` file:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5433/promo_db"
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/promo_db
 ```
 
 ---
 
-### 4. Run database
-
-Example using Docker:
+### 4. Run PostgreSQL (Docker)
 
 ```bash
 docker run --name promo-postgres \
@@ -119,23 +114,23 @@ npx prisma migrate dev --name init
 npm run start:dev
 ```
 
-Server will run at:
+---
 
-```
-http://localhost:3000
-```
+## 📚 API Documentation
+
+Swagger UI available at:
+
+👉 http://localhost:3000/api
 
 ---
 
-## 🧪 API Endpoints
+## 🧪 Example Requests
 
 ### Create Promo Code
 
 ```http
 POST /promocodes
 ```
-
-Body:
 
 ```json
 {
@@ -148,21 +143,11 @@ Body:
 
 ---
 
-### Get All Promo Codes
-
-```http
-GET /promocodes
-```
-
----
-
 ### Activate Promo Code
 
 ```http
 POST /promocodes/:code/activate
 ```
-
-Body:
 
 ```json
 {
@@ -172,53 +157,54 @@ Body:
 
 ---
 
-## ❗ Business Rules
+## 🔐 Constraints
 
-* A promo code can be activated only within its validity period
-* Each email can activate a specific promo code only once
-* Activation cannot exceed the defined limit
-* All activation operations are executed inside a transaction
+* Unique activation per `(promoCodeId, email)`
+* Activation count cannot exceed limit
+* Expired codes are rejected
 
 ---
 
 ## 🧪 Testing
 
-Example using PowerShell:
+You can test via:
 
-```powershell
-Invoke-RestMethod -Uri "http://localhost:3000/promocodes" `
--Method POST `
--Headers @{ "Content-Type" = "application/json" } `
--Body '{"code":"SALE10","discount":10,"activationLimit":2,"expiresAt":"2026-12-31T00:00:00Z"}'
+* Swagger UI
+* PowerShell / curl
+
+---
+
+## 📦 Project Structure
+
+```
+src/
+ ├── promocode/
+ ├── activation/
+ ├── prisma/
+ └── main.ts
 ```
 
 ---
 
-## 📦 Tech Stack
+## 🚀 Future Improvements
 
-* NestJS
-* Prisma ORM
-* PostgreSQL
-* TypeScript
-
----
-
-## 📌 Notes
-
-* No authentication implemented (as per requirements)
-* No frontend included
-* Focus on correctness and data integrity
-
----
-
-## ✅ Status
-
-✔ Core functionality implemented
-✔ Constraints enforced
-✔ API tested manually
+* Authentication & user accounts
+* Rate limiting
+* Admin dashboard
+* Unit & integration tests
 
 ---
 
 ## 👨‍💻 Author
 
 * Shirley Bailey
+
+---
+
+## 📌 Notes
+
+This project was implemented as a backend test task, focusing on:
+
+* correctness
+* data integrity
+* clean architecture

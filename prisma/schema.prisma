@@ -1,13 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PromoCode {
+  id               String   @id @default(uuid())
+  code             String   @unique
+  discount         Int
+  activationLimit  Int
+  activationCount  Int      @default(0)
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+
+  activations      Activation[]
+}
+
+model Activation {
+  id           String   @id @default(uuid())
+  promoCodeId  String
+  email        String
+  createdAt    DateTime @default(now())
+
+  promoCode    PromoCode @relation(fields: [promoCodeId], references: [id])
+
+  @@unique([promoCodeId, email])
 }
